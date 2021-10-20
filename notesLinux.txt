@@ -1,0 +1,234 @@
+Asemble:
+	- "call" function in Asemble : put the next address(address after the function call ) to the the stack and move to the function which should be called.
+	- %eax -> it means register 
+	- compiler decide which data goes to register or to stack.
+	- Register -> compiler,  Cache -> HW decided,  Memory -> operationg system,  Storage -> operating system
+
+Dual-Mode:
+	- there is a bit in in the processor (HW) which we can set/reset it to switch between User / kernel Mode
+	- instruction change the mode to kernel and another to change to user mode
+	
+System call: 
+	- should be supported by the hardware
+	- save numbe of system call in register
+	- call int with the number of the system call to excute system call
+	
+interrupt:
+	- Hardware moves to Kernel stack
+	- if system call inside the kernel stack, the Stack would grow no new stack should be created
+
+Ring buffer:
+	- modula arithmetic
+	 
+Microkernel: 
+	- multiable proccess to excute the code
+	
+monolithic:
+	- the kernel is one proccess
+	
+kernel address:
+	- 32 bits is always 5 GBs
+	- kernel is always the first GB of the RAM
+	
+scheudler:
+	- maxium CPU utilization
+	- first come first service Process policy
+	- burst time -> how long the process will excute untill it blocks
+	- Round Robin :
+		- quantum -> how long is process is allowed to run 
+		- if quantum is infinity then we have first run first service
+		- if quantum is zero not then we wont excute any thing 
+		- 
+NAND:
+	- allow random access
+	- write -> can only change 1 to 0
+	- to change the bit to one u have to erase block 
+	- the SSD has flash translation layer(FTL) which achieve wear leaving
+	- 
+	
+malloc:
+	- sbrk -> to create heap page
+	- malloc is implemenit in library not in the kernel
+	- 
+	
+stack:
+	- in linux stack is expandable
+
+heap:
+	-  
+	
+JFFS2:
+	- it applied 3 lists empty, full, dirty -> to avoid copy and paste data which not needed to copy
+	
+Files:
+	- file is a string of bytes
+	
+inode:
+	- it identify a file, it has alot of data about the file 
+	- 
+	
+##############################################################################################################################################################
+################################################################### Memory ###################################################################################	
+##############################################################################################################################################################																##############
+
+Logical address:
+	- memory unside the process
+	
+Linear address / Virtual address :
+	- 4 GB Ram address 0X00000000 -> 0XFFFFFFFF
+
+physical address:
+	- memory cell in memory chips
+	
+MMU:
+	- Logical address -> /Segemenataion Unit/ -> Linear address -> /Paging unit/ -> physical address 	
+	
+Layout of Memory:
+	- kernel doesnot start from 0X0 address because that is stored for BIOS routine in Laptop 
+
+mem_map:
+	- array of page descriptors of type page
+	- the last 128 MB of high memory is mapped tp high-memory page frame
+
+process get new memory:
+	- new process is created
+	- process keeps growing until the stack is not enough
+	- malloc 
+
+procces descriptor has a field which points to the address space of the process(memory descriptor)
+
+
+	
+##############################################################################################################################################################
+################################################################### Process ##################################################################################	
+##############################################################################################################################################################																##############
+
+Process:
+	- from the kernel point of view it is entity which needs resources
+	- every process hat it is own stack 
+
+Kernel stack:
+	- at the end of the stack there is Thread_info struct 
+
+
+	
+##############################################################################################################################################################
+################################################################### Double Linked List #######################################################################	
+##############################################################################################################################################################																##############
+
+LIST_HEAD(list_name):
+	- macro declare list_name of type list_head
+
+list_entry(p,t,m):
+	- Returns the address of the data structure of type t in which the list_head field that has the name m and the address p is included.
+
+
+##############################################################################################################################################################
+################################################################### Wait_queue ###############################################################################	
+##############################################################################################################################################################
+
+wait_queue_head_t:
+	struct __wait_queue_head {
+		spinlock_t lock;
+		struct list_head task_list;};
+	typedef struct __wait_queue_head wait_queue_head_t;
+
+wait_queue_t:
+	struct __wait_queue {
+		unsigned int flags;
+		struct task_struct *task;
+		wait_queue_func_t func;
+		struct list_head task_list;};	
+	typedef struct __wait_queue wait_queue_t;
+
+DEFINE_WAIT(wait):
+	- declare a new wait_queue_t variable and initializes it with the descriptor of the process currently executing on the CPU
+
+tasklets and softirq:
+	- excute by work queue
+
+softirq:
+	- statically allocated
+	- can run concurrently
+	
+	
+tasklets:
+	- dynamically allocated
+	- serialized
+	-
+	
+##############################################################################################################################################################
+################################################################### Hardware Context #########################################################################	
+##############################################################################################################################################################
+
+hardware context:
+	- set of data needed to be loaded im register for process to be executed
+	- it is stord in process descriptor and in the kernel stack
+
+TSS:
+	- task state segment 
+	- it has kernel mode stack and privilige
+	- 
+
+interrupt:
+	- it can come anytime
+	- interrupt handler should never sleep because scheudler is deacitvated
+	
+
+kernel control path:
+	- denotes the sequence of instructions executed by the kernel to handle a system call
+	- each kernel control path refers to its own private kernel stack
+	
+##############################################################################################################################################################
+################################################################### timing ###################################################################################	
+##############################################################################################################################################################
+
+RTC:
+	- it ticks also when the PC is off 
+	- it has memory to store time
+
+TSC:
+	- time stamp counter 
+	- processor has a specific pin which connected to oscillator 
+	- a specific register will be increased by each tick
+	- the counter is an equation in frequency of the signal
+	
+PIT:
+	Programmablr Interval timer issue interrupt at a speific rate
+
+Time related activity:
+	- update time elasped, update time, scheudle
+	
+jiffies:
+	- it stores the number of elapsed ticks since the system was started
+	- it is initialized by -5 minutes so if the kernel has a mistake with handling overflow it would cause a problem after 5 minutes
+	
+timer:
+	- gurantee that aspecific task is executed after at least a specific time
+	- 
+Dynamic Timers:
+	- it is stord in timer_list
+	
+	
+##############################################################################################################################################################
+
+		
+file descriptor:
+	- it represent interaction between process and an opened file.
+	- if in the same process the file is opened many times, we will get a a different file descriptor but the same file object
+	- if serveral process openened the file then we will get a different file object and a different file descriptor
+	- 
+	
+process descriptor:
+	- it has PC, SP, general proccess registes
+	- when the kernel decides to resume the work it will reload the registers from proccess descriptor
+	- 
+
+zombie process:
+	- process which it is parent exit without calling wait
+	- the kernel reparenting the kernel to init process which will call wait() periodically
+	
+	
+soft link:
+	- ln -s p1 p2 -> p1 is the link, while p2 is the source
+	
