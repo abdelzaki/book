@@ -72,13 +72,23 @@ inode:
 ##############################################################################################################################################################																##############
 
 Logical address:
-	- memory unside the process
+	- memory inside the process.
+	- it is divivded to page and offset inside the page
 	
 Linear address / Virtual address :
 	- 4 GB Ram address 0X00000000 -> 0XFFFFFFFF
+	- the address after MMU calculation
+
+---> Page frame in Linux is 2^12 = 4096 = 4 KB
+
 
 physical address:
 	- memory cell in memory chips
+	
+Kernel memeory address:
+	- 896 MB is the kernel
+	- 128 MB is high memory mapping
+	- at the end we get 1 GB kernel 
 	
 MMU:
 	- Logical address -> /Segemenataion Unit/ -> Linear address -> /Paging unit/ -> physical address 	
@@ -90,12 +100,27 @@ mem_map:
 	- array of page descriptors of type page
 	- the last 128 MB of high memory is mapped tp high-memory page frame
 
+---> kernel must keep tack of the status of each page frame
+
+page:
+	- it is page descriptor
+	- stored in mem_map array
+	-  
+
+buddy_allocator:
+	- Bit map + buudy allocator
+	
+	
+slap allocator:
+	- it depend on the idea that the kernel uses often  the same area object 
+	- allocate a according to a specific object
+	
 process get new memory:
 	- new process is created
 	- process keeps growing until the stack is not enough
 	- malloc 
 
-procces descriptor has a field which points to the address space of the process(memory descriptor)
+---> procces descriptor has a field which points to the address space of the process(memory descriptor)
 
 
 	
