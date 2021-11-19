@@ -27,8 +27,8 @@ monolithic:
 	- the kernel is one proccess
 	
 kernel address:
-	- 32 bits is always 5 GBs
-	- kernel is always the first GB of the RAM
+	- 32 bits is always 4 GBs
+	- kernel is always the first 1 GB of the RAM
 	
 scheudler:
 	- maxium CPU utilization
@@ -66,14 +66,22 @@ Files:
 inode:
 	- it identify a file, it has alot of data about the file 
 	- 
+
+task_struct:
+	- it represents a process
+	- 
 	
+pid:
+	- it identify a process
+	- 
+
 ##############################################################################################################################################################
 ################################################################### Memory ###################################################################################	
 ##############################################################################################################################################################																##############
 
 Logical address:
 	- memory inside the process.
-	- it is divivded to page and offset inside the page
+	- it is divided to page and offset inside the page
 	
 Linear address / Virtual address :
 	- 4 GB Ram address 0X00000000 -> 0XFFFFFFFF
@@ -100,12 +108,39 @@ mem_map:
 	- array of page descriptors of type page
 	- the last 128 MB of high memory is mapped tp high-memory page frame
 
+RAM: memory address
+	- starts from 0X00100000--0
+	- 
+
+IO Ports:
+	- mapped to another Memory address
+	- it uses another bus rather than the memory address
+	- it is mapped to RAM to make it easier to generate address
+	
+
 ---> kernel must keep tack of the status of each page frame
 
 page:
 	- it is page descriptor
 	- stored in mem_map array
-	-  
+	-  memory is split in Page frame
+
+Block:
+	- process is split in blocks
+
+process page table:
+	- every process has this table
+	- it is stored in the kernel space
+	- it map block to page frame
+	
+page table:
+	- it could be 2 level dir,table,offst so we dont need to have contigues memory 
+
+process:
+	- it is a program in excutation
+	- every process has PCB (process control block)
+	- kernel stack for the process -> it is used to store the context of the process when system call happens
+	- page table which map physical memory to virtual memory
 
 buddy_allocator:
 	- Bit map + buudy allocator
@@ -119,6 +154,7 @@ process get new memory:
 	- new process is created
 	- process keeps growing until the stack is not enough
 	- malloc 
+
 
 ---> procces descriptor has a field which points to the address space of the process(memory descriptor)
 
@@ -170,7 +206,7 @@ DEFINE_WAIT(wait):
 	- declare a new wait_queue_t variable and initializes it with the descriptor of the process currently executing on the CPU
 
 tasklets and softirq:
-	- excute by work queue
+	- execute by work queue
 
 softirq:
 	- statically allocated
@@ -198,7 +234,13 @@ TSS:
 interrupt:
 	- it can come anytime
 	- interrupt handler should never sleep because scheudler is deacitvated
+	- PIC stores a vector to allow the cpu to find out which interrupt line was active
+	- Interrupt Descriptor Table (IDT) map each interrupt with a handler it has maxium 256 interrupt
+	- interrupt handler should never sleep because all data need to restore the execute is stored in Kernel stack which is related to the running process
+	- when interrupt happens the kernel will save all the registers of the current process and then call do_IRQ() which call all ISR
 	
+IRQ sharing:
+	- iterrupt handler execute several ISR every ISR should decide if the interrupt is relevant or not
 
 kernel control path:
 	- denotes the sequence of instructions executed by the kernel to handle a system call
@@ -219,7 +261,7 @@ TSC:
 	- the counter is an equation in frequency of the signal
 	
 PIT:
-	Programmablr Interval timer issue interrupt at a speific rate
+	Programmabler Interval timer issue interrupt at a speific rate
 
 Time related activity:
 	- update time elasped, update time, scheudle
@@ -255,5 +297,5 @@ zombie process:
 	
 	
 soft link:
-	- ln -s p1 p2 -> p1 is the link, while p2 is the source
+	- ln -s file link
 	
