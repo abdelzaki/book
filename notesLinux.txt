@@ -51,20 +51,15 @@ NOR:
 	- code can be excuted from it
 	- it is expensive
 
-
-
-	
 malloc:
 	- sbrk -> to create heap page
 	- malloc is implemenit in library not in the kernel
-	- 
-	
+	- 	
 stack:
 	- in linux stack is expandable
 
 heap:
-	-  
-	
+	-  	
 JFFS2:
 	- it applied 3 lists empty, full, dirty -> to avoid copy and paste data which not needed to copy
 	
@@ -241,6 +236,19 @@ process get new memory:
 	- process keeps growing until the stack is not enough
 	- malloc 
 
+VAS: 
+	- virtual address space
+	- divivded to homogenous segement -> text, data, OSS , stack, heap, library
+	- thread share every thing in the VAS except stack
+	- 
+
+Thread:
+	- kernel schedulable entity (KSE)
+	- every thread maps to structure task_structure
+	- every thread has user stack and kernel stack
+	- kernel stack are fixed in size 2 pages
+	- 
+
 
 ---> procces descriptor has a field which points to the address space of the process(memory descriptor)
 
@@ -278,6 +286,13 @@ Kernel stack:
 mm_struct:
 	- it contain all information related to process address space
 	- 
+
+- kernel code is executed in 2 possible ways:
+	- Process context -> system call
+	- interrupt -> hardare or exception
+	
+	
+
 	
 ##############################################################################################################################################################
 ################################################################### Double Linked List #######################################################################	
@@ -458,15 +473,15 @@ LKM:
 	- to write to the kernel buffer from user space u can always use echo " test" /dev/kmsg
 	
 make file:
-	- when u write make in shell it will search for a file which has the name makefile 
-	
-
-
-
-
-
-
-		
+	- when u write make in shell it will search for a file which has the name makefile
+	- make file has the following structure 
+		target : denpendent
+			rule
+			
+	obj-m += file.o
+		- create the file which name is file.o using file.c 
+		- add the name in list oject list
+				
 ##############################################################################################################################################################
 		
 file descriptor:
