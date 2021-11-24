@@ -449,8 +449,17 @@ kbuild:
 	
 LKM:
 	- enables to change the kernel without rebuilding it every time
+	- module should return 0 in success
+	- ERR_PTR(-ENOM) -> chnange the error to address
+	- __init/exit -> memory optimiziazion, memory will be freed after the function is called
+	- printk() -> it output to kernel logfile -> dmesg will show it it is in RAM
+	- lsmod -> show all the modules which are in memory
+	- linux log file is an array which has size defined in the compilation process through an micro
+	- to write to the kernel buffer from user space u can always use echo " test" /dev/kmsg
 	
-
+make file:
+	- when u write make in shell it will search for a file which has the name makefile 
+	
 
 
 
@@ -474,7 +483,7 @@ process descriptor:
 zombie process:
 	- process which it is parent exit without calling wait
 	- the kernel reparenting the kernel to init process which will call wait() periodically
-	
+	- to insert the module use -> insmod path_of_the_module
 	
 soft link:
 	- ln -s file link
