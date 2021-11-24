@@ -100,6 +100,18 @@ Toolchain:
 
 
 ##############################################################################################################################################################
+##################################################################      I2C     ##############################################################################	
+##############################################################################################################################################################
+
+- every device should have address
+- it is 2 line communications
+- the line has 7 bits address
+- master talks to 1 address at a time
+-
+
+
+
+##############################################################################################################################################################
 ################################################################### Boot process #############################################################################	
 ##############################################################################################################################################################
 
@@ -241,6 +253,16 @@ MTD:
 	- memory technology device
 	- it can handle NOR and NAND
 	- the kernek knows abouth the partition through Device tree or Board support package
+	- MTD with major number 90 to handle char /dev/mtd0 or /dev/mtd2 read and write 
+	- mtd with major number 31 to handle block deice /dev/mtdblock0 /dev/mtdblock1
+	- flash should always be erase before writting in it
+	
+##############################################################################################################################################################
+################################################################### Char Driver ##############################################################################	
+##############################################################################################################################################################	
+
+
+
 	
 ##############################################################################################################################################################
 ################################################################### Process ##################################################################################	
@@ -379,7 +401,62 @@ dentry:
 	
 file system: 
 	- the idea is to put a function to support a lot if file system and replace this function according to the file system type
+
+Sysfs:
+	- user space manifestation of kernel device model
 	
+Bus_register:
+	- create /sys/bus/
+	
+device_register:
+	- /sys/device/
+	
+##############################################################################################################################################################
+################################################################### Kbuild ###################################################################################	
+##############################################################################################################################################################
+
+kbuild:
+	- it ties the configration and the build prcoess 
+	- config_FOO: 
+		- FOO -> y - yes build it to the kernel
+			  -> m - module build as a seperate object
+			  -> n - no donot build it
+	
+	- kconfig:
+		- where CONFIG_FOO is defined
+		
+	- makefile:
+		- normal make file
+		
+	- .config:
+		- where the kernel configuration is stored
+
+- Kernel configuration file:
+	- as a start there is a configuration file for each platorm under arch/<arch>/configs/platform_defconfig
+	- copy the file in root folder with name .config
+	
+	
+##############################################################################################################################################################
+###################################################################   LKM  ###################################################################################	
+##############################################################################################################################################################			  
+
+- toolchain:
+	- compile linker and assembler
+	- c library
+	
+- souce code: 
+	- it is linux code + Arch-specific code
+	
+LKM:
+	- enables to change the kernel without rebuilding it every time
+	
+
+
+
+
+
+
+
 		
 ##############################################################################################################################################################
 		
@@ -401,4 +478,18 @@ zombie process:
 	
 soft link:
 	- ln -s file link
+	
+- to know linux kernel:
+	- uname -r ->
+	
+	
+building Linux kernel:
+	- obtain source file
+	- extract source file in a folder
+	- configure using menuconfig
+	- buld kernel
+	
+- top-level makefile:
+	- make file at the top of the source code
+	- it has the version of linux in it
 	
