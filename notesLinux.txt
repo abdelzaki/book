@@ -93,7 +93,31 @@ Toolchain:
 	- set of tools that compilesource code into executable
 	- Components are : compiler, linker, run time libraries
 
+##############################################################################################################################################################
+##################################################################     I/O      ##############################################################################	
+##############################################################################################################################################################
 
+- all memeory access should be through mmu unit
+- I/O is mapped in two ways:
+	- regoin in process is reserved fpr mapping the I/O called "memeory mapped IO MMIO"
+	- using a special instruction to access the I/O called "port mapped IO" PIO
+	
+- u need to ask the permission from the OS to get access the memory region u want to access
+
+- ioremap:
+	- map the address to a process address space 
+	- it is ARCH specific header
+	- it takes physical address as a parameter
+	- __iomem -> compiler attribute to tell it is a IO 
+	
+- in order to work on IO memoy region two steps are required
+	-> ask permission "requestrequest_mem_region"
+	-> map the IO to VAS "ioremap"
+	-> write to it through using specifi API "ioread, iowrite"
+
+- the another way is accessing the port by a special instructions:
+	- inb,outb
+	
 ##############################################################################################################################################################
 ##################################################################      I2C     ##############################################################################	
 ##############################################################################################################################################################
@@ -223,6 +247,10 @@ process:
 	- kernel stack for the process -> it is used to store the context of the process when system call happens
 	- page table which map physical memory to virtual memory
 
+page allocar:
+	- array of double linked list which points to a free page frame with size which is 2^order of the array
+	
+
 buddy_allocator:
 	- Bit map + buudy allocator
 	
@@ -250,6 +278,9 @@ Thread:
 	- 
 
 
+
+
+
 ---> procces descriptor has a field which points to the address space of the process(memory descriptor)
 
 
@@ -268,6 +299,22 @@ MTD:
 ##############################################################################################################################################################
 ################################################################### Char Driver ##############################################################################	
 ##############################################################################################################################################################	
+
+- char device exposed functions and data to user space via /dev
+
+- char dev is represented using the followin data structure
+	struct cdev{kobject, owner, file_operation, dev_t-> major / minor }
+
+- to create a char device u need to regiser it 
+	-> register_chrdev_region -> if u know in advance the dev_t
+	-> alloc_chrdev_region -> to allocate device and let the kernel decide which number will be given to the char driver
+	-> create class under /sys/class/
+	-> create device under /dev
+	
+file_operation:
+	-> open bind the inode with filep because all other file operations work on file data structure not on inode data structure
+
+
 
 
 
@@ -359,6 +406,16 @@ interrupt:
 	- Interrupt Descriptor Table (IDT) map each interrupt with a handler it has maxium 256 interrupt
 	- interrupt handler should never sleep because all data need to restore the execute is stored in Kernel stack which is related to the running process
 	- when interrupt happens the kernel will save all the registers of the current process and then call do_IRQ() which call all ISR
+	- kernel core will handle the interrupt not the code the user write
+
+- request_irq:
+	- will add interrupt handler to the list which the core kernel will call to excute the interrupt
+	-
+interrupt handler:
+	- dont block 
+	- dont call anything which might call schedule
+	- dont call copy_to_user() as it might lead to fault 
+	
 	
 IRQ sharing:
 	- iterrupt handler execute several ISR every ISR should decide if the interrupt is relevant or not
@@ -481,6 +538,28 @@ make file:
 	obj-m += file.o
 		- create the file which name is file.o using file.c 
 		- add the name in list oject list
+		
+device driver:
+	- block -> it can be mounted Hard driver
+	- char -> SPI, I2C
+
+dev_t:
+	- it represent major and minor number where major represent a class of devices or drivers for example a hard disk while the minor can 
+		represent a parition inside that class
+	- major is 12 bits size while the minor is 20 bits
+	
+LDM.
+	- linux device model divide the drivers into bus, device, device drives
+	- every device might it on a bus
+	- driver shall register it to kernel frame work and to a bus
+	- when the driver register itself a file under /dev/-- will be created
+	
+Proc filesystem:
+	- it is a way to look inside the kernel to get information about the processes, kernel, etc
+	- proc file system is in RAM
+
+sysfs:
+	- u can see the device model from different points of view (bus support, class view or device )
 				
 ##############################################################################################################################################################
 		
