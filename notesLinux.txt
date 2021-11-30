@@ -126,13 +126,19 @@ Toolchain:
 - it is 2 line communications
 - the line has 7 bits address
 - master talks to 1 address at a time
--
+- driver is rep
 
 
 
 ##############################################################################################################################################################
 ################################################################### Boot process #############################################################################	
 ##############################################################################################################################################################
+
+- Bootloader:
+	- initializes memeory
+	- load kernel to RAM and create excutation enviroment
+	- bootloader should pass data structure which descripe HW and pass pointer to kernel command line
+	
 
 1th Stage:
 	- Rom code load secondary program loader (SPL) from Flash / USB / internet to SRAM
@@ -142,6 +148,8 @@ Toolchain:
 	
 U-boot:
 	- bootm address_of_kernel address_of_ramdisk address_of_dtb
+	- pass memory address of kernel and device tree
+	- kernel will start and will call init process -> busybox init or systemV or system D
 
 Image:
 	- is vmlinux converted as binary format
@@ -154,7 +162,7 @@ uImage:
 
 bootargs:
 	- is a way to send data to the kernel 
-	
+
 	
 ##############################################################################################################################################################
 ################################################################### RFS #############################################################################	
@@ -295,6 +303,8 @@ MTD:
 	- MTD with major number 90 to handle char /dev/mtd0 or /dev/mtd2 read and write 
 	- mtd with major number 31 to handle block deice /dev/mtdblock0 /dev/mtdblock1
 	- flash should always be erase before writting in it
+	- static struct mtd_partition mlc3250_nand_partition[] = { -> it is the way to partition Nand device
+
 	
 ##############################################################################################################################################################
 ################################################################### Char Driver ##############################################################################	
@@ -306,19 +316,93 @@ MTD:
 	struct cdev{kobject, owner, file_operation, dev_t-> major / minor }
 
 - to create a char device u need to regiser it 
-	-> register_chrdev_region -> if u know in advance the dev_t
-	-> alloc_chrdev_region -> to allocate device and let the kernel decide which number will be given to the char driver
+	-> register_chrdev_region -> if u know in advance the dev_t. it will occupy the driver number
+	-> alloc_chrdev_region -> to allocate device and let the kernel decide which number will be given to the char driver, it will create 
+		deivce under /proc/devices
 	-> create class under /sys/class/
-	-> create device under /dev
+	-> create device under /dev -> it represent device not driver as it has minor number and it is created using "mknod" or using device create
 	
 file_operation:
 	-> open bind the inode with filep because all other file operations work on file data structure not on inode data structure
+	
+		
+################################################################################################################################################
+################################################################### Platform_driver ############################################################	
+################################################################################################################################################
 
+- it represents a driver and device which is not a part of the conventioal drivers such as I2C, SPI, 
 
+- in order to handle plat_form u need to register the drivers which is a data strucure which contains name, probe, remove
 
+- probe is called when matches happen between plat_form device and plat_form drivers
 
+- to represent a plat_form_driver the following data structure should be used "struct platform_driver ":
+static struct platform_driver mypdrv = {
+	.probe = my_pdrv_probe,
+	.remove = my_pdrv_remove,
+	.driver = {
+		.name = "my_platform_driver",
+		.owner = THIS_MODULE,},};
+		
+- platform_device is represented using platform_device struct:
+	struct platform_device {
+		const char *name;
+		u32 id;
+		struct device dev;
+		u32 num_resources;
+		struct resource *resource;
+		};
+		
+- resource is what represent the device from the hardware point of view "IO, Memory, IRQ"
+	resource{start, stop, name, flag}
+		
+		
+################################################################################################################################################
+################################################################### Device tree ############################################################	
+################################################################################################################################################	
+
+- device tree: 
+	- is enabled by setting CONFIG_OF to y 
+	- collection of device node 
+	- it should have a root node
+	
+- node:
+	- it express itself using properities
+	- any node can have subnode 
+	
+- DTS -> it is the source file text file
+
+- DTB -> the compiled source
+
+- dtsi -> header file which represent the SOC level 
+
+- reference:
+	- & is used to reference a node in device tree
+	
+- #size-cells:
+	- how many 32-bits represent the size-cells
+
+- #address-cells:
+	- how many 32-bits represent address
+	
 
 	
+- Properities:
+	- it is a key value pair 
+	- it is standard names and there is standard to use non standard name (custom proerities)
+	- compatible:
+		- it is a string list
+		- client programm "linux" it is list from the most specific to the most general
+		- it is used for driver selections 
+		- manufacture, model
+		- it used to match and load a driver which support this device 
+		- kernel search for drivers which supports this device.
+		
+- Rule of device tree:
+	- define machine
+	- pass botargs to the kernel
+	- populate device 
+
 ##############################################################################################################################################################
 ################################################################### Process ##################################################################################	
 ##############################################################################################################################################################																
@@ -513,8 +597,16 @@ kbuild:
 ##############################################################################################################################################################			  
 
 - toolchain:
+	- the task of toolchain is to compile the code, generate instruction which suitable for CPU, it should support the language
 	- compile linker and assembler
 	- c library
+	- it cinsists of:
+		- Binutils: linker and assembler
+		- Compiler: GCC
+		- C library: interface to OS
+		- linux header: 
+		
+	- u should add the path of the toolchain to 
 	
 - souce code: 
 	- it is linux code + Arch-specific code
@@ -540,15 +632,18 @@ make file:
 		- add the name in list oject list
 		
 device driver:
-	- block -> it can be mounted Hard driver
+	- block -> it can be mounted Hard driver and has buffer
 	- char -> SPI, I2C
+	- each device driver should register itself using driver_register()
+	- 
 
 dev_t:
 	- it represent major and minor number where major represent a class of devices or drivers for example a hard disk while the minor can 
 		represent a parition inside that class
 	- major is 12 bits size while the minor is 20 bits
+	- major tells linux which driver to use while minor is handled inside the driver itself
 	
-LDM.
+LDM:
 	- linux device model divide the drivers into bus, device, device drives
 	- every device might it on a bus
 	- driver shall register it to kernel frame work and to a bus
@@ -560,6 +655,17 @@ Proc filesystem:
 
 sysfs:
 	- u can see the device model from different points of view (bus support, class view or device )
+				
+- foreach bus there is a bus core driver, 
+	bus is a channel between processor and device,
+	bus core driver should allocate bus_type structure and register itself using "bus_register()"w ith kernel list of bus_type
+	when u call device_register a list of supported deivce from the bus is updated,
+	when u call driver_register a list of drivers which can handle a certain device is registered.
+	
+	
+
+				
+				
 				
 ##############################################################################################################################################################
 		
@@ -595,4 +701,13 @@ building Linux kernel:
 - top-level makefile:
 	- make file at the top of the source code
 	- it has the version of linux in it
+	
+	
+	
+	
+##############################################################################################################################################################
+################################################################### Schulung #################################################################################	
+##############################################################################################################################################################
+
+
 	
