@@ -353,10 +353,13 @@ static struct platform_driver mypdrv = {
 		struct resource *resource;
 		};
 		
+- platform_driver regiser itself to platfrom_bus using platform_driver_register()
+		
 - resource is what represent the device from the hardware point of view "IO, Memory, IRQ"
 	resource{start, stop, name, flag}
 		
-		
+- 
+	
 ################################################################################################################################################
 ################################################################### Device tree ############################################################	
 ################################################################################################################################################	
@@ -384,8 +387,6 @@ static struct platform_driver mypdrv = {
 
 - #address-cells:
 	- how many 32-bits represent address
-	
-
 	
 - Properities:
 	- it is a key value pair 
@@ -421,10 +422,7 @@ mm_struct:
 - kernel code is executed in 2 possible ways:
 	- Process context -> system call
 	- interrupt -> hardare or exception
-	
-	
-
-	
+		
 ##############################################################################################################################################################
 ################################################################### Double Linked List #######################################################################	
 ##############################################################################################################################################################																
@@ -661,12 +659,7 @@ sysfs:
 	bus core driver should allocate bus_type structure and register itself using "bus_register()"w ith kernel list of bus_type
 	when u call device_register a list of supported deivce from the bus is updated,
 	when u call driver_register a list of drivers which can handle a certain device is registered.
-	
-	
-
-				
-				
-				
+					
 ##############################################################################################################################################################
 		
 file descriptor:
@@ -690,8 +683,7 @@ soft link:
 	
 - to know linux kernel:
 	- uname -r ->
-	
-	
+		
 building Linux kernel:
 	- obtain source file
 	- extract source file in a folder
@@ -701,9 +693,6 @@ building Linux kernel:
 - top-level makefile:
 	- make file at the top of the source code
 	- it has the version of linux in it
-	
-	
-	
 	
 ##############################################################################################################################################################
 ################################################################### Schulung #################################################################################	
