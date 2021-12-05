@@ -698,5 +698,43 @@ building Linux kernel:
 ################################################################### Schulung #################################################################################	
 ##############################################################################################################################################################
 
+- c language:
+	- it can access memory range while python needs operating system to communicate with.
+	- it gives portabitily becuase it is not architecture dependent.
+	- u choice which c version depends on the compiler.
+	- ansci c is c89
 
+- compilation processing:
+	file.c -> | prepossing | -> file.i -> | compiler | -> file.s -> | assembler | -> file.o -> | linker | -> file.exe 
+
+- library:
+	- it is exectuable without main
 	
+- .elf -> it is the output for linux
+- .bin -> normal exectuable
+- .hex -> it is .bin but changed as hex
+
+- minGW:
+	-> native toolchain
+	
+- eclipse:
+	-> it is Idee 
+	
+- DataTypes:
+	- integer:
+		- char: . size byte 
+				 . -128 : 127
+		
+		- unsigned: 255 = 2^8 - 1
+	
+	integer:
+		- most of the time it is 4 bytes
+		
+	
+- implicit casting:
+	- int and float would map to float
+	- it happens automatically
+	
+- explicit:
+	- u should do it ur self
+		
