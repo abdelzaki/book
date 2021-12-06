@@ -737,4 +737,14 @@ building Linux kernel:
 	
 - explicit:
 	- u should do it ur self
-		
+
+- fflush(stdout) -> send eveything to the output
+
+- to set a specific bit :
+	- R |= (1 << n)
+	
+- to reset a bit:
+	- R &= ~(1 << n);
+	
+- to toggle a bit:
+	- R ^= ~(1 << n);
