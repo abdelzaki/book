@@ -774,7 +774,7 @@ building Linux kernel:
 
 - #define container_of(ptr, type, member) \
 	 ( (type * ) ( (char*)ptr - (char *)&(((type*)0)->member ) ) ) 
-=======
+
 ##############################################################################################################################################################
 ################################################################### Schulung #################################################################################	
 ##############################################################################################################################################################
@@ -829,4 +829,33 @@ building Linux kernel:
 	
 - to toggle a bit:
 	- R ^= ~(1 << n);
->>>>>>> 6dfd3388756ac62f60d71aa3a52cf3b843bec00c
+
+- 2D array:
+	- int x[2][4] = {{},{}}; -> the first number is the number of Raws
+	
+- %s:
+	- it will print until it meets "/0"
+	
+- strcpy:
+	- strcpy(a, b) -> copy a to b
+	
+- Local Variables:
+	- it has garbage as initialize value
+	
+- Static global:
+	- it makes the Variable local to this file and initialize value is zero
+	
+- extern:
+	- it is created in a file but it can be used in different file 
+	- some compiler put extern by default
+	
+- struct :
+	- defination of structure does not occupy any memory.
+	- once u use it u occupy data in memory
+	- if u initialize any member of structure the rest will be zeros
+	- try always to pass struct by reference
+	
+MACRO:
+	- #x -> 'x'
+	- x##y -> xy
+	- (...) -> __VAR_ARGS__
