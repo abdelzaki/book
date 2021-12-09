@@ -748,3 +748,16 @@ building Linux kernel:
 	
 - to toggle a bit:
 	- R ^= ~(1 << n);
+
+- steps to set enviromental to compile C code:
+	- install GNU tool chain
+	-
+
+- map file:
+	- it contains symbol table
+
+- micro processor: CPU
+	- IC which perform logical operations (ALU, CU, Registers) + I/O 
+
+micro Controller:
+	- CPU + RAM + perpherials
