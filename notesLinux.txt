@@ -1,36 +1,36 @@
-Asemble:
+- Asemble:
 	- "call" function in Asemble : put the next address(address after the function call ) to the the stack and move to the function which should be called.
 	- %eax -> it means register 
 	- compiler decide which data goes to register or to stack.
 	- Register -> compiler,  Cache -> HW decided,  Memory -> operationg system,  Storage -> operating system
 
-Dual-Mode:
+- Dual-Mode:
 	- there is a bit in in the processor (HW) which we can set/reset it to switch between User / kernel Mode
 	- instruction change the mode to kernel and another to change to user mode
 	
-System call: 
+- System call: 
 	- should be supported by the hardware
 	- save numbe of system call in register
 	- call int with the number of the system call to excute system call
 	
-interrupt:
+- interrupt:
 	- Hardware moves to Kernel stack
 	- if system call inside the kernel stack, the Stack would grow no new stack should be created
 
-Ring buffer:
+- Ring buffer:
 	- modula arithmetic
 	 
-Microkernel: 
+- Microkernel: 
 	- multiable proccess to excute the code
 	
-monolithic:
+- monolithic:
 	- the kernel is one proccess
 	
-kernel address:
+- kernel address:
 	- 32 bits is always 4 GBs
 	- kernel is always the first 1 GB of the RAM
 	
-scheudler:
+- scheudler:
 	- maxium CPU utilization
 	- first come first service Process policy
 	- burst time -> how long the process will excute untill it blocks
@@ -39,57 +39,54 @@ scheudler:
 		- if quantum is infinity then we have first run first service
 		- if quantum is zero not then we wont excute any thing 
 		- 
-NAND:
+- NAND:
 	- allow random access
 	- write -> can only change 1 to 0
 	- to change the bit to one u have to erase block 
 	- the SSD has flash translation layer(FTL) which achieve wear leaving
 	- it has OOB (out of band) area to store error detection 
 	
-
-NOR:
+- NOR:
 	- code can be excuted from it
 	- it is expensive
 
-malloc:
+- malloc:
 	- sbrk -> to create heap page
 	- malloc is implemenit in library not in the kernel
 	- 	
-stack:
+- stack:
 	- in linux stack is expandable
 
-heap:
+- heap:
 	-  	
-JFFS2:
+- JFFS2:
 	- it applied 3 lists empty, full, dirty -> to avoid copy and paste data which not needed to copy
 	
-Files:
+- Files:
 	- file is a string of bytes
 	
-inode:
+- inode:
 	- it identify a file, it has alot of data about the file 
-	- 
 
-task_struct:
+
+- task_struct:
 	- it represents a process
-	- 
 	
-pid:
+- pid:
 	- it identify a process
-	- 
 
 ##############################################################################################################################################################
 ################################################################ Embedded Linux ##############################################################################	
 ##############################################################################################################################################################
 
-Components:
+- Components:
 	- Toolchain -> to compile linux
 	- Bootloader -> the program which will load the kernel to memory
 	- Kernel -> it manages the resources
 	- Root file system -> contains what the linux will run when it started to run
 	
 
-Toolchain:
+- Toolchain:
 	- set of tools that compilesource code into executable
 	- Components are : compiler, linker, run time libraries
 
@@ -128,8 +125,21 @@ Toolchain:
 - master talks to 1 address at a time
 - driver is rep
 
+##############################################################################################################################################################
+##################################################################      GPIO     #############################################################################	
+##############################################################################################################################################################
 
-
+- GPIO subsystem consist of 3 layers :
+	- core -> HW independent comes from Linux itself, which is the middle layer between producer and consumer
+	- producer -> it is HW dependent for each SOC there should be producer which knows how to handle SOC and it should register itself 
+					to the core
+	- consumer -> it communicate with the core to contril GPIO
+	
+- dt:
+	- led-gpios = <&gpio 15 pull_up>
+		led -> it is the function
+		gpio -> it is the phandle
+	
 ##############################################################################################################################################################
 ################################################################### Boot process #############################################################################	
 ##############################################################################################################################################################
@@ -139,7 +149,6 @@ Toolchain:
 	- load kernel to RAM and create excutation enviroment
 	- bootloader should pass data structure which descripe HW and pass pointer to kernel command line
 	
-
 1th Stage:
 	- Rom code load secondary program loader (SPL) from Flash / USB / internet to SRAM
 
@@ -162,7 +171,6 @@ uImage:
 
 bootargs:
 	- is a way to send data to the kernel 
-
 	
 ##############################################################################################################################################################
 ################################################################### RFS #############################################################################	
@@ -177,7 +185,6 @@ initramfs:
 Disk image:
 	- copy of Root file system which is ready to be copied in mass stotage device 
 	
-
 ##############################################################################################################################################################
 ################################################################### Init Process #############################################################################	
 ##############################################################################################################################################################	
@@ -187,45 +194,44 @@ Disk image:
 	- ::sysinit:/etc/init,d/rcS -> where to run the first script
 	- ::rspawn:/sbin/syslogd -n -> keep it running
 
-
 ##############################################################################################################################################################
 ################################################################### Memory ###################################################################################	
 ##############################################################################################################################################################
 
-Logical address:
+- Logical address:
 	- memory inside the process.
 	- it is divided to page and offset inside the page
 	
-Linear address / Virtual address :
+- Linear address / Virtual address :
 	- 4 GB Ram address 0X00000000 -> 0XFFFFFFFF
 	- the address after MMU calculation
 
 ---> Page frame in Linux is 2^12 = 4096 = 4 KB
 
 
-physical address:
+- physical address:
 	- memory cell in memory chips
 	
-Kernel memeory address:
+- Kernel memeory address:
 	- 896 MB is the kernel
 	- 128 MB is high memory mapping
 	- at the end we get 1 GB kernel 
 	
-MMU:
+- MMU:
 	- Logical address -> /Segemenataion Unit/ -> Linear address -> /Paging unit/ -> physical address 	
 	
-Layout of Memory:
+- Layout of Memory:
 	- kernel doesnot start from 0X0 address because that is stored for BIOS routine in Laptop 
 
-mem_map:
+- mem_map:
 	- array of page descriptors of type page
 	- the last 128 MB of high memory is mapped tp high-memory page frame
 
-RAM: memory address
+- RAM: memory address
 	- starts from 0X00100000--0
 	- 
 
-IO Ports:
+- IO Ports:
 	- mapped to another Memory address
 	- it uses another bus rather than the memory address
 	- it is mapped to RAM to make it easier to generate address
@@ -233,70 +239,65 @@ IO Ports:
 
 ---> kernel must keep tack of the status of each page frame
 
-page:
+- page:
 	- it is page descriptor
 	- stored in mem_map array
 	-  memory is split in Page frame
 
-Block:
+- Block:
 	- process is split in blocks
 
-process page table:
+- process page table:
 	- every process has this table
 	- it is stored in the kernel space
 	- it map block to page frame
 	
-page table:
+- page table:
 	- it could be 2 level dir,table,offst so we dont need to have contigues memory 
 
-process:
+- process:
 	- it is a program in excutation
 	- every process has PCB (process control block)
 	- kernel stack for the process -> it is used to store the context of the process when system call happens
 	- page table which map physical memory to virtual memory
 
-page allocar:
+- page allocar:
 	- array of double linked list which points to a free page frame with size which is 2^order of the array
 	
 
-buddy_allocator:
+- buddy_allocator:
 	- Bit map + buudy allocator
 	
 	
-slap allocator:
+- slap allocator:
 	- it depend on the idea that the kernel uses often  the same area object 
 	- allocate a according to a specific object
 	
-process get new memory:
+- process get new memory:
 	- new process is created
 	- process keeps growing until the stack is not enough
 	- malloc 
 
-VAS: 
+- VAS: 
 	- virtual address space
 	- divivded to homogenous segement -> text, data, OSS , stack, heap, library
 	- thread share every thing in the VAS except stack
 	- 
 
-Thread:
+- Thread:
 	- kernel schedulable entity (KSE)
 	- every thread maps to structure task_structure
 	- every thread has user stack and kernel stack
 	- kernel stack are fixed in size 2 pages
 	- 
 
-
-
-
-
 ---> procces descriptor has a field which points to the address space of the process(memory descriptor)
-
 
 ##############################################################################################################################################################
 ###################################################################   MTD   ##################################################################################	
 ##############################################################################################################################################################
 
-MTD:
+- MTD:
 	- memory technology device
 	- it can handle NOR and NAND
 	- the kernek knows abouth the partition through Device tree or Board support package
@@ -305,12 +306,17 @@ MTD:
 	- flash should always be erase before writting in it
 	- static struct mtd_partition mlc3250_nand_partition[] = { -> it is the way to partition Nand device
 
-	
 ##############################################################################################################################################################
 ################################################################### Char Driver ##############################################################################	
 ##############################################################################################################################################################	
 
 - char device exposed functions and data to user space via /dev
+- the driver lives in kernek space
+
+- device number:
+	- it consists of MAJOR and MONIR number
+	- it is important for VFS so it can connect the driver in Kernel space with the devic in user space
+	- driver should register it self to VFS using cdev_add()
 
 - char dev is represented using the followin data structure
 	struct cdev{kobject, owner, file_operation, dev_t-> major / minor }
@@ -322,10 +328,37 @@ MTD:
 	-> create class under /sys/class/
 	-> create device under /dev -> it represent device not driver as it has minor number and it is created using "mknod" or using device create
 	
-file_operation:
+- file_operation:
 	-> open bind the inode with filep because all other file operations work on file data structure not on inode data structure
 	
+- open call:
+	- initialize the device
+	- check open permission
+	-  identify the file by minor number
+	- prepare private data
+	- 
+	
+- Kernel API:
+	- alloc_chrdev_region() -> it will create deive number	
+		alloc_chrdev_region(dev_t *dev, baseminor, count, *name)
+			- *dev -> it is output 
+			- *name -> that is not the name of the device
+		 	
+	- cdev_init / cdev_add() -> register char device in VFS	
+		- cdev_init(struct cdev *cdev,struct file_operation *fops)
+		- it will assign file operation in cdev with the given fops 
+	
+		- cdev_add(struct cdev *p, dev_t dev, unsiged count):
+		- it will connect file operation with device number 
 		
+	
+	- class_create() / device_create() -> create device file
+		class_create -> create directory in /sys/class/< class_name >
+		device_create -> create subdirectory in /sys/class/< class_name > / dev-> which has major and minor  
+
+	- MKDEV:
+		- it will creat dev_t variable 
+			
 ################################################################################################################################################
 ################################################################### Platform_driver ############################################################	
 ################################################################################################################################################
@@ -357,8 +390,6 @@ static struct platform_driver mypdrv = {
 		
 - resource is what represent the device from the hardware point of view "IO, Memory, IRQ"
 	resource{start, stop, name, flag}
-		
-- 
 	
 ################################################################################################################################################
 ################################################################### Device tree ############################################################	
@@ -415,7 +446,7 @@ Process:
 Kernel stack:
 	- at the end of the stack there is Thread_info struct 
 
-mm_struct:
+- mm_struct:
 	- it contain all information related to process address space
 	- 
 
@@ -427,10 +458,10 @@ mm_struct:
 ################################################################### Double Linked List #######################################################################	
 ##############################################################################################################################################################																
 
-LIST_HEAD(list_name):
+- LIST_HEAD(list_name):
 	- macro declare list_name of type list_head
 
-list_entry(p,t,m):
+- list_entry(p,t,m):
 	- Returns the address of the data structure of type t in which the list_head field that has the name m and the address p is included.
 
 
@@ -438,13 +469,13 @@ list_entry(p,t,m):
 ################################################################### Wait_queue ###############################################################################	
 ##############################################################################################################################################################
 
-wait_queue_head_t:
+- wait_queue_head_t:
 	struct __wait_queue_head {
 		spinlock_t lock;
 		struct list_head task_list;};
 	typedef struct __wait_queue_head wait_queue_head_t;
 
-wait_queue_t:
+- wait_queue_t:
 	struct __wait_queue {
 		unsigned int flags;
 		struct task_struct *task;
@@ -452,18 +483,17 @@ wait_queue_t:
 		struct list_head task_list;};	
 	typedef struct __wait_queue wait_queue_t;
 
-DEFINE_WAIT(wait):
+- DEFINE_WAIT(wait):
 	- declare a new wait_queue_t variable and initializes it with the descriptor of the process currently executing on the CPU
 
-tasklets and softirq:
+- tasklets and softirq:
 	- execute by work queue
 
-softirq:
+- softirq:
 	- statically allocated
 	- can run concurrently
 	
-	
-tasklets:
+- tasklets:
 	- dynamically allocated
 	- serialized
 	-
@@ -472,16 +502,16 @@ tasklets:
 ################################################################### Hardware Context #########################################################################	
 ##############################################################################################################################################################
 
-hardware context:
+- hardware context:
 	- set of data needed to be loaded im register for process to be executed
 	- it is stord in process descriptor and in the kernel stack
 
-TSS:
+- TSS:
 	- task state segment 
 	- it has kernel mode stack and privilige
 	- 
 
-interrupt:
+- interrupt:
 	- it can come anytime
 	- interrupt handler should never sleep because scheudler is deacitvated
 	- PIC stores a vector to allow the cpu to find out which interrupt line was active
@@ -493,13 +523,13 @@ interrupt:
 - request_irq:
 	- will add interrupt handler to the list which the core kernel will call to excute the interrupt
 	-
-interrupt handler:
+- interrupt handler:
 	- dont block 
 	- dont call anything which might call schedule
 	- dont call copy_to_user() as it might lead to fault 
 	
 	
-IRQ sharing:
+- IRQ sharing:
 	- iterrupt handler execute several ISR every ISR should decide if the interrupt is relevant or not
 
 kernel control path:
@@ -509,7 +539,6 @@ kernel control path:
 ##############################################################################################################################################################
 ################################################################### timing ###################################################################################	
 ##############################################################################################################################################################
-
 RTC:
 	- it ticks also when the PC is off 
 	- it has memory to store time
@@ -549,7 +578,7 @@ inode:
 	
 file object:
 	- store information about the interaction between a proccess and an open file
-
+	- there will be file object for every open call system
 dentry:
 	- store information about the linking of a directory
 	
@@ -589,6 +618,28 @@ kbuild:
 	- as a start there is a configuration file for each platorm under arch/<arch>/configs/platform_defconfig
 	- copy the file in root folder with name .config
 	
+- in tree module:
+	- internal to linux kernel tree
+	
+- out of tree:
+	- external to linux
+	- kernel will issue message when u insert it 
+	
+- u always need a precompiled version of the linux to build a gainst it
+
+- make - C <path to linux kernel tree> M= <path to ur module> [target]
+	- in tree path is: /lib/modules/$(uname -r)/build 
+	- out of tree is
+		-C source/linux 
+		ARCH=arm
+		CROSS_COMPILE=toolchain
+	
+target:
+	- modules: to build a module
+	
+- obj-<x> := module_name.obj
+	- m : it is build as dynamically module
+	- y : it is build as statically module
 	
 ##############################################################################################################################################################
 ###################################################################   LKM  ###################################################################################	
@@ -618,7 +669,30 @@ LKM:
 	- lsmod -> show all the modules which are in memory
 	- linux log file is an array which has size defined in the compilation process through an micro
 	- to write to the kernel buffer from user space u can always use echo " test" /dev/kmsg
+
+- printk():
+	- it will put message in buffer
+	- printk(KERN_WARNNING "hello world \n");
+
+- module_init:
+	- it should return integer
+	- it is called during boot time in static and during insertion if it is dynamically build
+	- it is good to make it static 
 	
+- module clean_up:
+	- return integer
+	- it is only useful when u build dynamically module
+	- it should undo what u have done in module init function
+	
+- __init / __exit:
+		- it macro which is compiler attribute 
+		- it tells the compiler to set this code in a specific section which make it easier to delete the data after the initialized
+		- it makes sense only in static modules 
+		_ __exit -> it would be excluded if the module is statically build as u cannot remove the module
+
+module_init():
+		- macro which will register the function as module enty point the same as module_exit()
+		
 make file:
 	- when u write make in shell it will search for a file which has the name makefile
 	- make file has the following structure 
@@ -633,6 +707,7 @@ device driver:
 	- block -> it can be mounted Hard driver and has buffer
 	- char -> SPI, I2C
 	- each device driver should register itself using driver_register()
+	- it should expose interface to user space application
 	- 
 
 dev_t:
@@ -660,13 +735,11 @@ sysfs:
 	when u call device_register a list of supported deivce from the bus is updated,
 	when u call driver_register a list of drivers which can handle a certain device is registered.
 					
-##############################################################################################################################################################
-		
+##############################################################################################################################################################		
 file descriptor:
 	- it represent interaction between process and an opened file.
 	- if in the same process the file is opened many times, we will get a a different file descriptor but the same file object
 	- if serveral process openened the file then we will get a different file object and a different file descriptor
-	- 
 	
 process descriptor:
 	- it has PC, SP, general proccess registes
@@ -688,12 +761,20 @@ building Linux kernel:
 	- obtain source file
 	- extract source file in a folder
 	- configure using menuconfig
-	- buld kernel
+	- build kernel
 	
 - top-level makefile:
 	- make file at the top of the source code
 	- it has the version of linux in it
 	
+<<<<<<< HEAD
+- debug message
+	#define pr_fmt(fmt) "%S : " fmt, __FUNC__
+	#define pr_info(fmt,---) printk(pr_fmt(fmt), ##__VAR_ARGS__)
+
+- #define container_of(ptr, type, member) \
+	 ( (type * ) ( (char*)ptr - (char *)&(((type*)0)->member ) ) ) 
+
 ##############################################################################################################################################################
 ################################################################### Schulung #################################################################################	
 ##############################################################################################################################################################
@@ -749,6 +830,7 @@ building Linux kernel:
 - to toggle a bit:
 	- R ^= ~(1 << n);
 
+<<<<<<< HEAD
 - steps to set enviromental to compile C code:
 	- install GNU tool chain
 	-
@@ -761,3 +843,34 @@ building Linux kernel:
 
 micro Controller:
 	- CPU + RAM + perpherials
+=======
+- 2D array:
+	- int x[2][4] = {{},{}}; -> the first number is the number of Raws
+	
+- %s:
+	- it will print until it meets "/0"
+	
+- strcpy:
+	- strcpy(a, b) -> copy a to b
+	
+- Local Variables:
+	- it has garbage as initialize value
+	
+- Static global:
+	- it makes the Variable local to this file and initialize value is zero
+	
+- extern:
+	- it is created in a file but it can be used in different file 
+	- some compiler put extern by default
+	
+- struct :
+	- defination of structure does not occupy any memory.
+	- once u use it u occupy data in memory
+	- if u initialize any member of structure the rest will be zeros
+	- try always to pass struct by reference
+	
+MACRO:
+	- #x -> 'x'
+	- x##y -> xy
+	- (...) -> __VAR_ARGS__
+
