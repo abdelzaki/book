@@ -830,7 +830,6 @@ building Linux kernel:
 - to toggle a bit:
 	- R ^= ~(1 << n);
 
-<<<<<<< HEAD
 - steps to set enviromental to compile C code:
 	- install GNU tool chain
 	-
@@ -843,7 +842,7 @@ building Linux kernel:
 
 micro Controller:
 	- CPU + RAM + perpherials
-=======
+
 - 2D array:
 	- int x[2][4] = {{},{}}; -> the first number is the number of Raws
 	
@@ -869,8 +868,52 @@ micro Controller:
 	- if u initialize any member of structure the rest will be zeros
 	- try always to pass struct by reference
 	
-MACRO:
+- MACRO:
 	- #x -> 'x'
 	- x##y -> xy
 	- (...) -> __VAR_ARGS__
-
+	
+- FPU:
+	- floating point unit
+	- math on float numbers
+	
+- Memory:
+	- RAM:
+		- Random access memory, R/W, volatile
+		
+		- SRAM:
+			- 6 Transistors
+			- no refresing time is required as it is inverse system
+			- faster than DRAM 
+			- it is used in Cache
+			- it is expensive
+		
+		- DRAM:
+			- it is based on capacitor
+			- becuase of leckage, it should recharged 
+			- cheaper than SRAM
+	
+	- ROM:
+		- it is not volatile
+		- Read only memory
+	
+		- PROM:
+			- it can be written on it only once
+			- it is written by user
+		
+		Masked ROM:
+			- by the manufacture 
+			- BIOS
+			
+		EPROM:
+			- eraseable ROM
+			- 
+		
+		HYBRID:
+			- R/W nonvolatible
+			
+			EEPROM:
+				- Ersable electrically
+				
+		
+	
