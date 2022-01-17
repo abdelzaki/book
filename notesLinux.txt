@@ -2,8 +2,11 @@
 - export command ?
 
 
+##############################################################################################################################################################
+################################################################ Introduction   ##############################################################################	
+##############################################################################################################################################################
 
-
+- linux firmware used to understand the lower leverl hardware function to write interface to peripheral : GPIO, Timers, CAN, UART
 
 
 
@@ -100,8 +103,11 @@
 
 - Components:
 	- Toolchain -> to compile linux
-	- Bootloader -> the program which will load the kernel to memory
-	- Kernel -> it manages the resources
+	- Bootloader -> the program which will load the kernel to memory, initialize memory, and load kernel to it, pass command line to the kernel 
+	- Kernel -> it manages the resources, lowest level software running on the system 
+	- system call interface -> inteface between application and kernel. it is called through C- Runtime library
+	- C-Runtime
+	- shared library
 	- Root file system -> contains what the linux will run when it started to run
 	
 
@@ -165,8 +171,12 @@
 
 - Bootloader:
 	- initializes memeory
-	- load kernel to RAM and create excutation enviroment
+	- load kernel and RFS to RAM and create excutation enviroment
 	- bootloader should pass data structure which descripe HW and pass pointer to kernel command line
+
+ - POR:
+	- Hardware forces the arm processor to start execuation from boot ROM
+	- in some boards depending on Pin state Rom Code scan the content of different media storage (Flash, SD card) it will put contents of data in SDRAM
 	
 1th Stage:
 	- Rom code load secondary program loader (SPL) from Flash / USB / internet to SRAM
@@ -329,6 +339,23 @@ Disk image:
 		################################################################### Char Driver ##############################################################################
 		##############################################################################################################################################################	
 
+- device model:
+	- represent devices in an unified way
+	- it was first implemented from 2.6 devie tree from 3.7
+	
+- device:
+	- virtual or physical object attached to bus
+	- it is represent as struct device
+
+- driver:
+	- software entity which can handle a certain device
+	- it is represented as struct device_driver
+
+- bus:
+	- deivce which can server as an attachment point of serveral devices
+	- it is represented as struct bus_type
+	
+
 - char device exposed functions and data to user space via /dev
 - the driver lives in kernek space
 
@@ -392,6 +419,8 @@ Disk image:
 - in order to handle plat_form u need to register the drivers which is a data strucure which contains name, probe, remove
 
 - probe is called when matches happen between plat_form device and plat_form drivers
+	it could be a single name matching mechanism or id_table matching mechanism 
+	id_table matching mechanism has driver_data which will represent which device is detected
 
 - to represent a plat_form_driver the following data structure should be used "struct platform_driver ":
 static struct platform_driver mypdrv = {
@@ -424,6 +453,8 @@ static struct platform_driver mypdrv = {
 	- is enabled by setting CONFIG_OF to y 
 	- collection of device node 
 	- it should have a root node
+	- it exchanges data between hardware and OS
+	-  it describe the hardware of the device
 	
 - node:
 	- it express itself using properities
