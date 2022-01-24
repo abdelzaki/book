@@ -1,5 +1,11 @@
 
-- export command ?
+- export command:
+	- it allows sharing the exported variable with all the childs processes which was forked
+
+- source: or . 
+	- execute command in the current shell 
+	- it will see all the exported variable from the current shell
+	- the rest of the current shell will also see what was done in the sourced file
 
 
 ##############################################################################################################################################################
@@ -7,6 +13,8 @@
 ##############################################################################################################################################################
 
 - linux firmware used to understand the lower leverl hardware function to write interface to peripheral : GPIO, Timers, CAN, UART
+
+
 
 
 
@@ -114,6 +122,22 @@
 - Toolchain:
 	- set of tools that compilesource code into executable
 	- Components are : compiler, linker, run time libraries
+	
+- build the kernel from source tree:
+	- download the kernel source tree (u can know linux version from toplevel make file)
+	- configuer the kernel using make menuconfig
+	- build the kernel
+	
+	
+- kbuild:
+	- CONFIG-FOO : resolve to yes / no / module
+	- kconfig: where CONFIG_FOO is defined
+	- makefile: it is the normal make file
+	- config: where the configuration will be stored -> there is  a default configuration under arch/<arch>/configs/<name>_defconfig
+			: u can copy it to the root of linux source file under .config
+	
+	
+
 
 ##############################################################################################################################################################
 ##################################################################     I/O      ##############################################################################	
@@ -140,6 +164,14 @@
 - the another way is accessing the port by a special instructions:
 	- inb,outb
 	
+- Pin: it represents a physcial input or output carrying electrical signal
+		- every pin has a name which is proviced by the soc
+		- logical / canonical name -> mode zero name
+		- net name -> every possible function to a certian pin
+
+- pin multiplexing: the ability to onfigure the pin to perform different functions
+
+	
 ##############################################################################################################################################################
 ##################################################################      I2C     ##############################################################################	
 ##############################################################################################################################################################
@@ -158,13 +190,26 @@
 	- core -> HW independent comes from Linux itself, which is the middle layer between producer and consumer
 	- producer -> it is HW dependent for each SOC there should be producer which knows how to handle SOC and it should register itself 
 					to the core
-	- consumer -> it communicate with the core to contril GPIO
+	- consumer -> it communicate with the core to control GPIO
+	- helper -> led and keypad drivers 
 	
 - dt:
 	- led-gpios = <&gpio 15 pull_up>
 		led -> it is the function
 		gpio -> it is the phandle
 	
+- it is memeory mapped registers
+
+- pin configuration allow multiplexing the pin to act differently
+
+- gpio-controller nodes:
+	- every GPIO controller node must contain both an empty "gpio-controller"
+	
+- pin-ctrl:
+	- configure the pin -> UART, SPI, IO.
+	
+
+
 ##############################################################################################################################################################
 ################################################################### Boot process #############################################################################	
 ##############################################################################################################################################################
@@ -178,13 +223,20 @@
 	- Hardware forces the arm processor to start execuation from boot ROM
 	- in some boards depending on Pin state Rom Code scan the content of different media storage (Flash, SD card) it will put contents of data in SDRAM
 	
-1th Stage:
+1th Stage: RBL
 	- Rom code load secondary program loader (SPL) from Flash / USB / internet to SRAM
+	- it is written from SOC vendor
+	- it is the first code to run
+		-> stack initialize / setting clock 
+		-> copy MLO / SPL to RAM 
+		-> execute MLO / SPL
 
-2th Stage:
+2th Stage: SPL / MLO
 	- load Uboot from flash / USB /internet to DRAM
 	
-U-boot:
+	
+U-boot: third stage
+	- it looks for Uimage which is zImage + header file which is used by uboot 
 	- bootm address_of_kernel address_of_ramdisk address_of_dtb
 	- pass memory address of kernel and device tree
 	- kernel will start and will call init process -> busybox init or systemV or system D
@@ -200,6 +252,10 @@ uImage:
 
 bootargs:
 	- is a way to send data to the kernel 
+
+
+- uboot Command:
+	- load : load interface_name dev:partition address_in_RAM file_Name
 	
 ##############################################################################################################################################################
 ################################################################### RFS #############################################################################	
@@ -419,8 +475,14 @@ Disk image:
 - in order to handle plat_form u need to register the drivers which is a data strucure which contains name, probe, remove
 
 - probe is called when matches happen between plat_form device and plat_form drivers
-	it could be a single name matching mechanism or id_table matching mechanism 
+	it could be a single name matching mechanism or id_table matching mechanism or device_tree.
 	id_table matching mechanism has driver_data which will represent which device is detected
+	
+- platform driver should support multi devices with different configuration items
+	u can use id table to support multiable devices
+	platform_device_data has .name and and  .driver_data : "integer" which can be used as index to get the data
+	
+	
 
 - to represent a plat_form_driver the following data structure should be used "struct platform_driver ":
 static struct platform_driver mypdrv = {
@@ -428,7 +490,8 @@ static struct platform_driver mypdrv = {
 	.remove = my_pdrv_remove,
 	.driver = {
 		.name = "my_platform_driver",
-		.owner = THIS_MODULE,},};
+		.owner = THIS_MODULE,},
+		.of_match_table = list_of_device_id };
 		
 - platform_device is represented using platform_device struct:
 	struct platform_device {
@@ -438,6 +501,16 @@ static struct platform_driver mypdrv = {
 		u32 num_resources;
 		struct resource *resource;
 		};
+	
+- the supported devices by the driver is a list of the structure -> struct of_device_id	
+
+- struct of_device_id {
+					char name[32];
+					char type[32];
+					char compatible[128];
+					const void *data;
+					};
+
 - when u regiser device as platform device it will be shown in /sys/devices/platform
 		
 - platform_driver regiser itself to platfrom_bus using platform_driver_register()
@@ -445,9 +518,17 @@ static struct platform_driver mypdrv = {
 - resource is what represent the device from the hardware point of view "IO, Memory, IRQ"
 	resource{start, stop, name, flag}
 	
+	
+	
 		############################################################################################################################################
 		################################################################### Device tree ############################################################	
 		############################################################################################################################################	
+
+- it exists in arch/arm/boot/dts
+
+- integer properity is in <> -> org,size=<512>;
+
+- string properity in  "" -> org,serial="adfasd"
 
 - device tree: 
 	- is enabled by setting CONFIG_OF to y 
@@ -484,12 +565,17 @@ static struct platform_driver mypdrv = {
 		- it is used for driver selections 
 		- manufacture, model
 		- it used to match and load a driver which support this device 
-		- kernel search for drivers which supports this device.
+		- kernel search for drivers which supports this device.  driver should have of_device_id to tell which devices it supports 
+		- every driver has of_match_table
+		- u can always check for of_node to know what kind of probe has occurred
 		
 - Rule of device tree:
 	- define machine
-	- pass botargs to the kernel
+	- pass bootargs to the kernel
 	- populate device 
+	
+- reg:
+	- base and size 
 
 		##############################################################################################################################################################
 		################################################################### Process ##################################################################################
@@ -620,7 +706,18 @@ timer:
 	- 
 Dynamic Timers:
 	- it is stord in timer_list
+
+	##############################################################################################################################################################
+	################################################################### Device Module ############################################################################	
+	##############################################################################################################################################################
 	
+- device:
+	- anything which can represented as struct device
+
+- kobj: 
+	- embedded inside objects
+
+
 
 	##############################################################################################################################################################
 	################################################################### VFS ######################################################################################	
@@ -643,6 +740,17 @@ file system:
 
 Sysfs:
 	- user space manifestation of kernel device model
+
+attribute:
+	- name 
+	- mode:
+		- S_IRUGO -> S_I -> prefix, R/W -> read and write UGO-> user group other USR -> user
+
+- device attribute:
+	- it has show and store methods
+	- u connect it to the device u want to have attribute of
+	- show method has buffer which is provided by the kernel not by the user space
+	- u get the data by using device->parent 
 	
 Bus_register:
 	- create /sys/bus/
