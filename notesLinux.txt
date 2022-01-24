@@ -139,6 +139,10 @@
 	
 
 
+
+- under arch/<architecture>/machine-omap 
+	- there would be the code used to work with this board
+
 ##############################################################################################################################################################
 ##################################################################     I/O      ##############################################################################	
 ##############################################################################################################################################################
@@ -252,10 +256,51 @@ uImage:
 
 bootargs:
 	- is a way to send data to the kernel 
+<<<<<<< HEAD
 
 
 - uboot Command:
 	- load : load interface_name dev:partition address_in_RAM file_Name
+=======
+	- u can tell the type of the file system and the serial port which the kernel is going to use to send debug message
+	- it is uboot standard enviromental variable
+
+- uEnv:
+	- printenv:
+		- print all the enviromental variables
+		- printenv soc -> to show the value of a variable
+
+	- setenv serverip 192.168.0.1 -> used for tftp  
+		- to store value in a variable
+
+	- run commandname:
+		- to execute command
+
+	- load:
+		- to load a file from file system to RAM
+
+	- boot:
+		- will execute run bootcmd 
+
+	- bootm: bootm address_of_linux - address_of_dtb
+		- boot from memeory
+
+	-loadx:
+		- download via xmodem
+
+- uBoot:
+	- it is supported by DNX
+	- under board u will find in this folder
+
+- toolchain:
+	- download toolchain
+	- add path in /home/user/.baschrc 
+	- source /home/user/.bashrc
+	- apply defconfig tp generate .config
+	- apply menuconfig to edit .config
+	- apply make to build uboot
+
+>>>>>>> ce8768afd16d5854b2681d162ad3c8b544f12d29
 	
 ##############################################################################################################################################################
 ################################################################### RFS #############################################################################	
