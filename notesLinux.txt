@@ -6,6 +6,7 @@
 	- execute command in the current shell 
 	- it will see all the exported variable from the current shell
 	- the rest of the current shell will also see what was done in the sourced file
+	- can use set command to send data to the file u are sourced -> set 1 3 5
 
 
 ##############################################################################################################################################################
@@ -25,8 +26,8 @@
 
 
 
-###########################################################################################################################################
 
+###########################################################################################################################################
 
 - Asemble:
 	- "call" function in Asemble : put the next address(address after the function call ) to the the stack and move to the function which should be called.
@@ -55,6 +56,7 @@
 	
 - monolithic:
 	- the kernel is one proccess
+	- the process has one address space
 	
 - kernel address:
 	- 32 bits is always 4 GBs
@@ -101,10 +103,30 @@
 
 - task_struct:
 	- it represents a process
+	- it has thread_info structure
+	- it has the location of the stack
 	
 - pid:
 	- it identify a process
-
+	
+- kernel code:
+	- process context :
+		- sytsem call on behalf of a process
+	
+	- interrupt context:
+		- kernel code due to interrupt
+		
+- process:
+	- every process has text segement, data, stack and heap
+	- thread share everything in the process except stack
+	- thread is kernel schedulable entity
+	- every thread maps out to task_struct
+	- every thread has two stack kernel stack and user stack
+	- kernel mode stack is 4 KB size
+	
+	
+	
+	
 ##############################################################################################################################################################
 ################################################################ Embedded Linux ##############################################################################	
 ##############################################################################################################################################################
@@ -256,12 +278,12 @@ uImage:
 
 bootargs:
 	- is a way to send data to the kernel 
-<<<<<<< HEAD
+
 
 
 - uboot Command:
 	- load : load interface_name dev:partition address_in_RAM file_Name
-=======
+
 	- u can tell the type of the file system and the serial port which the kernel is going to use to send debug message
 	- it is uboot standard enviromental variable
 
@@ -300,8 +322,7 @@ bootargs:
 	- apply menuconfig to edit .config
 	- apply make to build uboot
 
->>>>>>> ce8768afd16d5854b2681d162ad3c8b544f12d29
-	
+
 ##############################################################################################################################################################
 ################################################################### RFS #############################################################################	
 ##############################################################################################################################################################	
@@ -319,11 +340,16 @@ Disk image:
 ################################################################### Init Process #############################################################################	
 ##############################################################################################################################################################	
 
-/etc/inittab: 
+/etc/inittab: -> systemV
 	- Configuration file to decide where to find the init process
-	- ::sysinit:/etc/init,d/rcS -> where to run the first script
+	- ::sysinit:/etc/init.d/rcS -> where to run the first script
 	- ::rspawn:/sbin/syslogd -n -> keep it running
 
+- rcS:
+	- look for skript in /ect/init.d/rcS
+	
+	
+	
 ##############################################################################################################################################################
 ################################################################### Memory ###################################################################################	
 ##############################################################################################################################################################
