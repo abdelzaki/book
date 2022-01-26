@@ -234,6 +234,24 @@
 - pin-ctrl:
 	- configure the pin -> UART, SPI, IO.
 	
+##############################################################################################################################################################
+################################################################### Scheduler #############################################################################	
+##############################################################################################################################################################
+
+- Policy:
+	- kernel has run queue for every cpu and scheudle 
+	- scheduler gets run by timer interrupt
+	- timer interrupt set the flag to switch when:
+		- the time span has exceeded
+		- high priority is active
+		
+
+
+
+
+
+
+
 
 
 ##############################################################################################################################################################
@@ -735,15 +753,20 @@ Kernel stack:
 
 - request_irq:
 	- will add interrupt handler to the list which the core kernel will call to excute the interrupt
-	-
+	- u give the address of the interupt line
+	- u can pass data to the handler 
+	
+	
 - interrupt handler:
 	- dont block 
 	- dont call anything which might call schedule
 	- dont call copy_to_user() as it might lead to fault 
+	- the kernel disable interrupt
 	
 	
 - IRQ sharing:
 	- iterrupt handler execute several ISR every ISR should decide if the interrupt is relevant or not
+	- u check for example the register of ur hardware to knwo wether it is the one which fired the interrupt
 
 kernel control path:
 	- denotes the sequence of instructions executed by the kernel to handle a system call
