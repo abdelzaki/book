@@ -207,7 +207,7 @@
 - the line has 7 bits address
 - master talks to 1 address at a time
 - driver is rep
-
+- it master slave protocol where communication takes place between host adapter and client device
 ##############################################################################################################################################################
 ##################################################################      GPIO     #############################################################################	
 ##############################################################################################################################################################
@@ -246,9 +246,11 @@
 		- high priority is active
 		
 
+##############################################################################################################################################################
+################################################################### Complete #############################################################################	
+##############################################################################################################################################################
 
-
-
+- 
 
 
 
@@ -372,6 +374,9 @@ Disk image:
 ################################################################### Memory ###################################################################################	
 ##############################################################################################################################################################
 
+- page : virtual memory
+- frame : physical memory
+
 - Logical address:
 	- memory inside the process.
 	- it is divided to page and offset inside the page
@@ -381,6 +386,15 @@ Disk image:
 	- the address after MMU calculation
 
 ---> Page frame in Linux is 2^12 = 4096 = 4 KB
+
+- kernel space:
+	- set of address when the kernel code run
+	- it is proriviliged
+	
+user space:
+	- set of memory where the application runs
+	- it is restricted
+	
 
 
 - physical address:
@@ -404,6 +418,18 @@ Disk image:
 - RAM: memory address
 	- starts from 0X00100000--0
 	- 
+
+- VAS:
+	- will have text, stack ,data
+	- 
+- PAGE_OFFSET:
+	- split the kernel and the user memory
+	
+- memory allocation:
+	- at the end every memory allocation would use page allocator
+	- page allocator:
+		- it uses array of pointer which point to contingious memory area which 
+
 
 - IO Ports:
 	- mapped to another Memory address
@@ -447,13 +473,13 @@ Disk image:
 	- it depend on the idea that the kernel uses often  the same area object 
 	- allocate a according to a specific object
 	
-- process get new memory:
+- process get new memory:C:\Eigene Dateien\Build_escrow\arch\arm\mach-lpc32xx\mlc3250.c
 	- new process is created
 	- process keeps growing until the stack is not enough
 	- malloc 
 
 - VAS: 
-	- virtual address space
+	- virtual address space -> it is a bit mask of page global directory, page table and offset
 	- divivded to homogenous segement -> text, data, OSS , stack, heap, library
 	- thread share every thing in the VAS except stack
 	- 
@@ -479,10 +505,24 @@ Disk image:
 	- mtd with major number 31 to handle block deice /dev/mtdblock0 /dev/mtdblock1
 	- flash should always be erase before writting in it
 	- static struct mtd_partition mlc3250_nand_partition[] = { -> it is the way to partition Nand device
+	
+	Flash:
+		- rewritable storage
+		- no need for power supply
+		- the flash is divivded in sectors
+		- flash based storage doesnot have standard parition table
+		-
 
 		##############################################################################################################################################################
 		################################################################### Char Driver ##############################################################################
 		##############################################################################################################################################################	
+
+- the communication between user space and the driver happens via /dev directory
+- it an instance of cdev which has file operations and double linked list
+
+
+-  
+
 
 - device model:
 	- represent devices in an unified way
@@ -550,6 +590,23 @@ Disk image:
 
 	- MKDEV:
 		- it will creat dev_t variable 
+		
+		################################################################################################################################################
+		################################################################### TTY ########################################################################	
+		################################################################################################################################################
+
+- it consist of:
+	user space -> tty core -> line displine -> tty Driver (Serial) -> HW
+
+- tty driver should represnt structure tty_driver
+
+- UART driver:
+	- uart_driver
+	- uart_port one for each port owned by the driver : memeory address
+	- uart_ops 
+	- u have to register the driver using uart_driver_register
+	- uart_add_one_port
+		
 			
 		################################################################################################################################################
 		################################################################### Platform_driver ############################################################	
@@ -575,12 +632,14 @@ Disk image:
 
 - to represent a plat_form_driver the following data structure should be used "struct platform_driver ":
 static struct platform_driver mypdrv = {
-	.probe = my_pdrv_probe,
+	.probe = my_pdrv_probe, -
 	.remove = my_pdrv_remove,
 	.driver = {
 		.name = "my_platform_driver",
 		.owner = THIS_MODULE,},
 		.of_match_table = list_of_device_id };
+		
+
 		
 - platform_device is represented using platform_device struct:
 	struct platform_device {
@@ -589,7 +648,14 @@ static struct platform_driver mypdrv = {
 		struct device dev;
 		u32 num_resources;
 		struct resource *resource;
+		const struct platform_device_id	*id_entry
 		};
+	
+	
+struct platform_device_id {
+	char name[PLATFORM_NAME_SIZE];
+	kernel_ulong_t driver_data;
+};
 	
 - the supported devices by the driver is a list of the structure -> struct of_device_id	
 
@@ -647,6 +713,7 @@ static struct platform_driver mypdrv = {
 	
 - Properities:
 	- it is a key value pair 
+	- it can be empty to describe aboolen
 	- it is standard names and there is standard to use non standard name (custom proerities)
 	- compatible:
 		- it is a string list
@@ -664,7 +731,12 @@ static struct platform_driver mypdrv = {
 	- populate device 
 	
 - reg:
-	- base and size 
+	- base and size
+
+- interrupt:
+	- it is represented as controller and as consumer
+	controller:
+		- 
 
 		##############################################################################################################################################################
 		################################################################### Process ##################################################################################
@@ -684,13 +756,28 @@ Kernel stack:
 - kernel code is executed in 2 possible ways:
 	- Process context -> system call
 	- interrupt -> hardare or exception
+	
+- kernel_thread:
+	- back ground process
+	- run in the kernel, does not have a user space process
+	- steps:
+		kernel_thread()-> to create the thread
+		- call daemonize inside the thread -> reparent the thread so it wont be a zombie process if it exits and the parent didnot call wait
 		
 		##############################################################################################################################################################
 		################################################################### Double Linked List #######################################################################
 		##############################################################################################################################################################																
 
 - LIST_HEAD(list_name):
-	- macro declare list_name of type list_head
+	- macro declare list_name of type list_head and initalize it
+	- it the static way
+	
+- INIT_LIST_HEAD:
+	 -dynamic way of declaring the list 
+	 - struct lost_head mylist
+	 -INIT_LIST_HEAD(&mylist)
+	 
+- list_for_each_entry(return, head, name_of_the_element)
 
 - list_entry(p,t,m):
 	- Returns the address of the data structure of type t in which the list_head field that has the name m and the address p is included.
@@ -727,7 +814,11 @@ Kernel stack:
 - tasklets:
 	- dynamically allocated
 	- serialized
-	-
+	- should not sleep
+	
+- workqueue:
+	- it can sleep
+	- 
 	
 		##############################################################################################################################################################
 		################################################################### Hardware Context #########################################################################
@@ -768,12 +859,19 @@ Kernel stack:
 	- iterrupt handler execute several ISR every ISR should decide if the interrupt is relevant or not
 	- u check for example the register of ur hardware to knwo wether it is the one which fired the interrupt
 
-kernel control path:
+- kernel control path:
 	- denotes the sequence of instructions executed by the kernel to handle a system call
 	- each kernel control path refers to its own private kernel stack
 	
+	
+- bottom half:
+	- tasklet never run in parallel
+	- it runs in atomic context
+	- call tasklet_schedule to register tasklet
+	
+	
 	##############################################################################################################################################################
-	################################################################### timing ###################################################################################	
+	################################################################### time ###################################################################################	
 	##############################################################################################################################################################
 RTC:
 	- it ticks also when the PC is off 
@@ -797,9 +895,50 @@ jiffies:
 	
 timer:
 	- gurantee that aspecific task is executed after at least a specific time
-	- 
+	- function which is runed by the timer run in interrupt context 
+	
+	
+	
 Dynamic Timers:
 	- it is stord in timer_list
+
+- schedule_timeout(jiffies)
+	- delay for a specific time 
+
+- udelay(mircoseconds):
+	- busy wait for 1 Jiffies
+	- in interrupt routine 
+	- nonblock API
+	
+- usleep:
+	- used when it is save to sleep
+	- it will invoke schedule which release the CPU
+
+- sleep:
+	- process sleeps when it is removed from scheduler
+	- to sleep:
+		-first option:
+			- static DECLARE_WAIT_QUEUE_HEAD(wq);
+			- wait_event_interruptible(wq, flag != 0);
+			- flag = 1;
+			- wake_up_interruptible(&wq);
+		- another option:
+			- set_cuttent_state(TASK_interruptable)
+			- schedule_timeout()
+
+	
+- time in user space:
+	- time()
+		- returns the local time in seconds
+		
+	- localtime():
+		- time in broken-down
+		
+	- mktime():
+		- the opposite of locaktime
+		
+		
+	
 
 	##############################################################################################################################################################
 	################################################################### Device Module ############################################################################	
