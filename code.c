@@ -40,6 +40,16 @@ public
 private -> not access from the derived
 protected
 
+- strings:
+	- group of character  
+	- it is array of charater -> char* name = "ahmed"
+	- null terminated added automatically
+
+const:
+	- const int * -> u cannot change the content of the pointer
+	- * const -> u cannot change what is it poined to
+	- in class it means the method wont change the member of the class
+	- it can be called from the object which is const
 
 pointers:
 	- integer which stores address
@@ -65,6 +75,12 @@ virtual:
 	- it gives the ability to override a method
 	- u mark the base function as virtual
 	- u write the function in the derived class override
+	- pure virutal "inteface" function it is function which should be override in the derived class
+
+- visibility:
+	- private: it is the default in the class
+	- private can access only from the class and tje friend od the class
+	- protected: from the class and subclass 	
 
 static:
 	- inside a file u make it local it to the file
