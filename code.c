@@ -34,3 +34,62 @@ int submit_work(void(*func)(void *data), void * data){
 	
 	
 }
+
+
+public 
+private -> not access from the derived
+protected
+
+- strings:
+	- group of character  
+	- it is array of charater -> char* name = "ahmed"
+	- null terminated added automatically
+
+const:
+	- const int * -> u cannot change the content of the pointer
+	- * const -> u cannot change what is it poined to
+	- in class it means the method wont change the member of the class
+	- it can be called from the object which is const
+
+pointers:
+	- integer which stores address
+	- void* means it typeless
+	- delete [] -> it is used to delete what is created by new[size]
+
+
+reference:
+	- int& -> that is how u declare a reference
+	- int& ref = a -> it means ref and a is the the same thing 
+	void function(&a){
+		a++;
+	} -> that is how u define a function that takes reference
+	- u can make the reference which it is pointed to it	
+
+
+- class:
+	- it is a way to group the data 
+	- by default every thing is private unless u changed it
+	- method takes instance of the class as parameter
+
+virtual:
+	- it gives the ability to override a method
+	- u mark the base function as virtual
+	- u write the function in the derived class override
+	- pure virutal "inteface" function it is function which should be override in the derived class
+
+- visibility:
+	- private: it is the default in the class
+	- private can access only from the class and tje friend od the class
+	- protected: from the class and subclass 	
+
+static:
+	- inside a file u make it local it to the file
+	- inside a class it means there is one instance in the class
+	- u need to define a static member some where
+	- to access them u use class::name 
+	- u use it to have variables cross classes
+	- static method can access only static member
+	- 
+enum:
+- it is used to group integer 
+- 
