@@ -1,0 +1,120 @@
+Make search for Makefile
+If u want to change the name of the file u can use make –f=newNameofFile
+
+- Content of make
+	Explicit:
+	Implicit
+	Variable definition
+	Directives
+	
+-Rules:
+	target : dependency
+		receipe
+	- target is usually .o or .exe file sometimes it is an action like clean "phony target"
+	- dependency is usually the input for this target  
+	- receipe is the action normally the traget will execute to achieve the rule 
+	- by default make would execute the first rule unless u give another option using command line
+	
+	
+	
+- Variable assigning:
+	 = means u can reassign the variables after u use it 
+	:= u assign the variables only one time u cannot change the value of the variable
+	+= add the new value to the old value 
+	?= if it doesn’t have value assign value to it
+
+-Order-only-prerequisties
+	- If the file exit ignore the time stamp
+	OBJDIR := objdir
+	OBJS := $(addprefix $(OBJDIR)/,foo.o bar.o baz.o)
+	$(OBJDIR)/%.o : %.c
+			$(COMPILE.c) $(OUTPUT_OPTION) $<
+	all: $(OBJS)
+	$(OBJS): | $(OBJDIR)
+	$(OBJDIR):
+			mkdir $(OBJDIR)
+
+- Wild card:
+	* : means every thing
+		if u want to use it with variable use var1 := $(wildcard *.c)
+		
+- Path:
+	- VAPTH:
+		- it is the folder the make would search for dependency when u execute it
+		- seperate the path using :
+		- example VPATH = src:../header -> that represents two folder src and ../header
+		- foo.o:foo.c -> would be foo.o : src/foo.c
+	- vpath: small charchter
+		- it gives the ability to match the rule as files
+		- vpath %.c foo means search for a file ending with .c in the folder foo/
+		
+- Directory Search for Link Libraries:	
+	foo : foo.c -lcurses
+        cc $^ -o $@	
+		
+- phony:
+	- build the traget even if there is a file with that name in the folder
+	- .phony : clean -> always execute clean even if there is a file with the name clean
+
+- static rule:
+	- objects = foo.o bar.o
+	- all: $(objects)
+	- $(objects): %.o: %.c	
+		$(CC) -c $(CFLAGS) $< -o $@  means every .c build .o
+
+- filter: 
+	- $(filter %.o,$(files)): %.o: %.c  means in files find every .o change to .c
+	
+- Substitution References:
+	- foo := a.o b.o l.a c.o
+	- bar := $(foo:%.o=%.c) -> bar would equal to a.c and b.c 	
+	
+
+- Functions for String Substitution and Analysis:
+	- $(subst from,to,text)
+	- $(subst ee,EE,feet on the street) -> ‘fEEt on the strEEt’. 
+
+
+- $(patsubst pattern,replacement,text)
+	 $(patsubst %.c,%.o,x.c.c bar.c)
+	 
+- working with files:
+	- $(addsuffix .c,foo bar) -> foo.c bar.c
+	
+$(addprefix src/,foo bar) :
+	- src/foo src/bar 
+	
+- Automatic Variables
+	-$@ target
+	$< - first dependency
+	$^ - all dependency
+
+- Eval function:
+	- it is a function which can be called in makefile
+	- use define a function and this define should be passed to passed to ieval 
+	- it is important to remember that the eval would be parsed twice that why u have to use $$ "to escape the first invoncation" if there is something u ´have tp be address when u expected that this variable would be addressed in the second  stage of the invoacation 
+	ex:
+	BUILD_DIR   := 1 2 3
+	define make-goal
+	$1_1:
+		@echo " CC    $$< to $$@"
+	endef
+	.PHONY: all checkdirs clean debug strip
+	all:  checkdirs test 
+	checkdirs: $(BUILD_DIR)
+	$(BUILD_DIR):
+		@echo "ssss"
+	test:1_1 2_1 3_1
+	$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
+
+
+
+
+
+
+
+
+
+
+
+
